@@ -1,0 +1,437 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  CUSTOMER
+  STAFF
+  ADMIN
+}
+
+enum StaffType {
+  MANAGER
+  COURIER
+}
+
+enum UserStatus {
+  ACTIVE
+  BLOCKED
+}
+
+enum ShipmentDirection {
+  EXPORT
+  IMPORT
+}
+
+enum ShipmentPurpose {
+  STANDARD
+  RETURN
+}
+
+enum ShipmentType {
+  DOCUMENT
+  PARCEL
+}
+
+enum ShipmentStatus {
+  PENDING_PAYMENT
+  PAID_AWAITING_ASSIGNMENT
+  PICKUP_ASSIGNED
+  PICKED_UP
+  AT_ORIGIN_HUB
+  IN_TRANSIT
+  AT_DESTINATION_HUB
+  DELIVERY_ASSIGNED
+  OUT_FOR_DELIVERY
+  DELIVERED
+  DELIVERY_FAILED
+  HELD_FOR_COLLECTION
+  COLLECTED_FROM_HUB
+  RETURN_BOOKED
+  RETURNED_TO_SENDER
+  CANCELLED
+}
+
+enum PaymentProvider {
+  STRIPE
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  CANCELLED
+  REFUNDED
+}
+
+enum CourierAvailabilityStatus {
+  AVAILABLE
+  AT_CAPACITY
+  OFFLINE
+  SUSPENDED
+}
+
+enum CourierTaskType {
+  PICKUP
+  DELIVERY
+}
+
+enum CourierTaskStatus {
+  ASSIGNED
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum EarningStatus {
+  PENDING
+  APPROVED
+  PAID
+}
+
+model User {
+  id           String     @id @default(cuid())
+  name         String
+  email        String     @unique
+  passwordHash String?
+  googleId     String?    @unique
+  role         Role       @default(CUSTOMER)
+  status       UserStatus @default(ACTIVE)
+  phone        String?
+  avatarUrl    String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  deletedAt    DateTime?
+
+  shipments            Shipment[]      @relation("CustomerShipments")
+  payments             Payment[]
+  trackingEvents       TrackingEvent[]
+  auditLogs            AuditLog[]      @relation("AuditActor")
+  notifications        Notification[]
+  refreshTokens        RefreshToken[]
+  ratesCreated         ShipmentRate[]  @relation("RateCreatedBy")
+  ratesUpdated         ShipmentRate[]  @relation("RateUpdatedBy")
+  staffProfile         StaffProfile?
+  courierTasksAssigned CourierTask[]   @relation("CourierTaskAssignedBy")
+
+  @@index([role])
+  @@index([status])
+  @@index([deletedAt])
+}
+
+model RefreshToken {
+  id        String    @id @default(cuid())
+  tokenHash String    @unique
+  userId    String
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model Country {
+  id             String    @id @default(cuid())
+  name           String    @unique
+  iso2Code       String    @unique
+  exportZoneCode String
+  importZoneCode String
+  isActive       Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
+
+  exportZone RateZone @relation("ExportCountryZone", fields: [exportZoneCode], references: [code])
+  importZone RateZone @relation("ImportCountryZone", fields: [importZoneCode], references: [code])
+
+  originShipments      Shipment[] @relation("ShipmentOriginCountry")
+  destinationShipments Shipment[] @relation("ShipmentDestinationCountry")
+  hubs                 Hub[]
+
+  @@index([exportZoneCode])
+  @@index([importZoneCode])
+  @@index([isActive])
+}
+
+model RateZone {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  exportCountries Country[]      @relation("ExportCountryZone")
+  importCountries Country[]      @relation("ImportCountryZone")
+  shipmentRates   ShipmentRate[]
+}
+
+model ShipmentRate {
+  id            String            @id @default(cuid())
+  direction     ShipmentDirection
+  zoneCode      String
+  shipmentType  ShipmentType
+  minWeightKg   Decimal           @db.Decimal(8, 2)
+  maxWeightKg   Decimal?          @db.Decimal(8, 2)
+  priceUsd      Decimal?          @db.Decimal(10, 2)
+  perKgRateUsd  Decimal?          @db.Decimal(10, 2)
+  effectiveFrom DateTime          @default(now())
+  effectiveTo   DateTime?
+  isActive      Boolean           @default(true)
+  createdById   String?
+  updatedById   String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  deletedAt     DateTime?
+
+  zone      RateZone @relation(fields: [zoneCode], references: [code])
+  createdBy User?    @relation("RateCreatedBy", fields: [createdById], references: [id])
+  updatedBy User?    @relation("RateUpdatedBy", fields: [updatedById], references: [id])
+
+  @@index([direction, zoneCode, shipmentType, isActive])
+  @@index([minWeightKg, maxWeightKg])
+  @@index([effectiveFrom, effectiveTo])
+  @@index([deletedAt])
+}
+
+model Hub {
+  id        String    @id @default(cuid())
+  name      String
+  code      String    @unique
+  city      String
+  countryId String
+  address   String
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  country              Country        @relation(fields: [countryId], references: [id])
+  originShipments      Shipment[]     @relation("OriginHub")
+  destinationShipments Shipment[]     @relation("DestinationHub")
+  currentShipments     Shipment[]     @relation("CurrentHub")
+  staffProfiles        StaffProfile[]
+  courierTasks         CourierTask[]
+
+  @@index([city])
+  @@index([countryId])
+  @@index([isActive])
+  @@index([deletedAt])
+}
+
+model StaffProfile {
+  id                 String                     @id @default(cuid())
+  userId             String                     @unique
+  hubId              String
+  staffType          StaffType
+  availabilityStatus CourierAvailabilityStatus?
+  activeTaskCount    Int                        @default(0)
+  maxActiveTasks     Int                        @default(5)
+  earningsBalanceUsd Decimal                    @default(0) @db.Decimal(10, 2)
+  totalDeliveries    Int                        @default(0)
+  createdAt          DateTime                   @default(now())
+  updatedAt          DateTime                   @updatedAt
+  deletedAt          DateTime?
+
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  hub          Hub              @relation(fields: [hubId], references: [id])
+  courierTasks CourierTask[]
+  earnings     CourierEarning[]
+
+  @@index([hubId, staffType])
+  @@index([availabilityStatus, activeTaskCount])
+  @@index([deletedAt])
+}
+
+model Shipment {
+  id                   String            @id @default(cuid())
+  trackingNumber       String            @unique
+  customerId           String
+  purpose              ShipmentPurpose   @default(STANDARD)
+  returnOfShipmentId   String?           @unique
+  direction            ShipmentDirection
+  shipmentType         ShipmentType
+  originCountryId      String
+  destinationCountryId String
+  originHubId          String?
+  destinationHubId     String?
+  currentHubId         String?
+  weightKg             Decimal           @db.Decimal(8, 2)
+  lengthCm             Decimal?          @db.Decimal(8, 2)
+  widthCm              Decimal?          @db.Decimal(8, 2)
+  heightCm             Decimal?          @db.Decimal(8, 2)
+  chargeableWeightKg   Decimal           @db.Decimal(8, 2)
+  priceUsd             Decimal           @db.Decimal(10, 2)
+  currency             String            @default("USD")
+  status               ShipmentStatus    @default(PENDING_PAYMENT)
+  senderSnapshot       Json
+  recipientSnapshot    Json
+  rateSnapshot         Json
+  pickupScheduledAt    DateTime?
+  pickedUpAt           DateTime?
+  deliveredAt          DateTime?
+  heldAt               DateTime?
+  collectedAt          DateTime?
+  cancelledAt          DateTime?
+  failedDeliveryCount  Int               @default(0)
+  lastFailureReason    String?
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+  deletedAt            DateTime?
+
+  customer           User            @relation("CustomerShipments", fields: [customerId], references: [id])
+  returnOfShipment   Shipment?       @relation("ShipmentReturn", fields: [returnOfShipmentId], references: [id])
+  returnShipment     Shipment?       @relation("ShipmentReturn")
+  originCountry      Country         @relation("ShipmentOriginCountry", fields: [originCountryId], references: [id])
+  destinationCountry Country         @relation("ShipmentDestinationCountry", fields: [destinationCountryId], references: [id])
+  originHub          Hub?            @relation("OriginHub", fields: [originHubId], references: [id])
+  destinationHub     Hub?            @relation("DestinationHub", fields: [destinationHubId], references: [id])
+  currentHub         Hub?            @relation("CurrentHub", fields: [currentHubId], references: [id])
+  payment            Payment?
+  trackingEvents     TrackingEvent[]
+  courierTasks       CourierTask[]
+
+  @@index([customerId, createdAt])
+  @@index([status])
+  @@index([direction])
+  @@index([shipmentType])
+  @@index([originCountryId])
+  @@index([destinationCountryId])
+  @@index([purpose])
+  @@index([deletedAt])
+}
+
+model CourierTask {
+  id               String            @id @default(cuid())
+  shipmentId       String
+  courierProfileId String
+  assignedById     String
+  hubId            String
+  taskType         CourierTaskType
+  status           CourierTaskStatus @default(ASSIGNED)
+  attemptNumber    Int               @default(1)
+  note             String?
+  failureReason    String?
+  contactAttempted Boolean?
+  assignedAt       DateTime          @default(now())
+  startedAt        DateTime?
+  completedAt      DateTime?
+  cancelledAt      DateTime?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  shipment       Shipment        @relation(fields: [shipmentId], references: [id])
+  courierProfile StaffProfile    @relation(fields: [courierProfileId], references: [id])
+  assignedBy     User            @relation("CourierTaskAssignedBy", fields: [assignedById], references: [id])
+  hub            Hub             @relation(fields: [hubId], references: [id])
+  earning        CourierEarning?
+
+  @@unique([shipmentId, taskType, attemptNumber])
+  @@index([courierProfileId, status])
+  @@index([hubId, taskType, status])
+  @@index([shipmentId, createdAt])
+}
+
+model Payment {
+  id                    String          @id @default(cuid())
+  shipmentId            String          @unique
+  customerId            String
+  provider              PaymentProvider @default(STRIPE)
+  providerSessionId     String?         @unique
+  providerPaymentIntent String?         @unique
+  amountUsd             Decimal         @db.Decimal(10, 2)
+  currency              String          @default("USD")
+  status                PaymentStatus   @default(PENDING)
+  paidAt                DateTime?
+  cancelledAt           DateTime?
+  metadata              Json?
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+
+  shipment Shipment @relation(fields: [shipmentId], references: [id])
+  customer User     @relation(fields: [customerId], references: [id])
+
+  @@index([customerId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model TrackingEvent {
+  id          String         @id @default(cuid())
+  shipmentId  String
+  status      ShipmentStatus
+  location    String?
+  note        String?
+  createdById String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  shipment  Shipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  createdBy User?    @relation(fields: [createdById], references: [id])
+
+  @@index([shipmentId, createdAt])
+  @@index([status])
+}
+
+model CourierEarning {
+  id             String        @id @default(cuid())
+  staffProfileId String
+  courierTaskId  String        @unique
+  amountUsd      Decimal       @db.Decimal(10, 2)
+  status         EarningStatus @default(PENDING)
+  approvedAt     DateTime?
+  paidAt         DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  staffProfile StaffProfile @relation(fields: [staffProfileId], references: [id])
+  courierTask  CourierTask  @relation(fields: [courierTaskId], references: [id])
+
+  @@index([staffProfileId])
+  @@index([status])
+}
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  action     String
+  entityType String
+  entityId   String
+  before     Json?
+  after      Json?
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  actor User? @relation("AuditActor", fields: [actorId], references: [id])
+
+  @@index([actorId])
+  @@index([entityType, entityId])
+  @@index([action])
+  @@index([createdAt])
+}
