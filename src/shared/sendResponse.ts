@@ -8,13 +8,7 @@ type SendResponseArgs<T> = {
   meta?: Record<string, unknown>;
 };
 
-export const sendResponse = <T>({
-  res,
-  statusCode,
-  message,
-  data,
-  meta,
-}: SendResponseArgs<T>) => {
+export const sendResponse = <T>({ res, statusCode, message, data, meta }: SendResponseArgs<T>) => {
   res.status(statusCode).json({
     success: true,
     message,

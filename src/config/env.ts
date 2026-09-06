@@ -4,17 +4,11 @@ import { z } from "zod";
 dotenv.config();
 
 const envSchema = z.object({
-  NODE_ENV: z
-    .enum(["development", "test", "production"])
-    .default("development"),
+  NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   PORT: z.coerce.number().default(5000),
   DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
-  JWT_ACCESS_SECRET: z
-    .string()
-    .min(12, "JWT_ACCESS_SECRET must be at least 12 characters"),
-  JWT_REFRESH_SECRET: z
-    .string()
-    .min(12, "JWT_REFRESH_SECRET must be at least 12 characters"),
+  JWT_ACCESS_SECRET: z.string().min(12, "JWT_ACCESS_SECRET must be at least 12 characters"),
+  JWT_REFRESH_SECRET: z.string().min(12, "JWT_REFRESH_SECRET must be at least 12 characters"),
   JWT_ACCESS_EXPIRES_IN: z.string().default("1d"),
   JWT_REFRESH_EXPIRES_IN: z.string().default("30d"),
   GOOGLE_CLIENT_ID: z.string().min(1).optional(),
@@ -33,10 +27,7 @@ const envSchema = z.object({
 const parsedEnv = envSchema.safeParse(process.env);
 
 if (!parsedEnv.success) {
-  console.error(
-    "Invalid environment variables",
-    parsedEnv.error.flatten().fieldErrors,
-  );
+  console.error("Invalid environment variables", parsedEnv.error.flatten().fieldErrors);
   process.exit(1);
 }
 
