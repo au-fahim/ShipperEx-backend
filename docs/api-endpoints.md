@@ -2,6 +2,14 @@
 
 Base URL: `/api/v1`
 
+Live base URL: `https://shipperex-backend.vercel.app/api/v1`.
+See the [Postman collection](ShipperEx.postman_collection.json) for request bodies
+and the [testing guide](postman-testing-guide.md) for demonstration order.
+`GET /` (outside `/api/v1`) returns the public welcome message.
+
+Primary roles are `CUSTOMER`, `STAFF`, and `ADMIN`. Manager and Courier below are
+Staff subtypes. Private endpoints require `Authorization: Bearer <accessToken>`.
+
 All responses use the assignment format:
 
 ```json
@@ -20,7 +28,7 @@ All responses use the assignment format:
 | POST | `/auth/register` | Public | Register Customer |
 | POST | `/auth/login` | Public | Shared password login |
 | POST | `/auth/google` | Customer only | Verify Google ID token and login/link |
-| POST | `/auth/refresh-token` | Public | Rotate access/refresh tokens |
+| POST | `/auth/refresh-token` | Valid refresh token in body | Issue new tokens; previous token is not automatically revoked |
 | POST | `/auth/logout` | Public | Revoke refresh token |
 | GET | `/countries` | Public | Active pricing countries |
 | GET | `/tracking/:trackingNumber` | Public | Privacy-safe shipment tracking |
@@ -100,8 +108,8 @@ written to the database.
 | --- | --- | --- | --- |
 | POST | `/payments/:shipmentId/initiate` | Customer | Create real Stripe Checkout Session |
 | POST | `/payments/webhook` | Stripe signature | Verify and process Checkout event |
-| GET | `/payments/success` | Public | Retrieve and reconcile Stripe Session |
-| GET | `/payments/cancel` | Public | Record Checkout cancellation |
+| GET | `/payments/success?session_id=:sessionId` | Public | Retrieve and reconcile Stripe Session |
+| GET | `/payments/cancel?session_id=:sessionId` | Public | Mark matching unpaid payment cancelled |
 | GET | `/payments/my` | Customer | Own payment history |
 | GET | `/payments/:id` | Owner/Manager/Admin | Scoped payment detail |
 | GET | `/notifications` | Authenticated | Own notifications |
@@ -110,3 +118,7 @@ written to the database.
 | GET | `/admin/audit-logs` | Admin | Paginated/filterable audit trail |
 
 The project contains well over 20 meaningful, database-connected endpoints.
+
+Callbacks without `session_id` return an acknowledgement with `data: null` and
+do not change payment status. The webhook requires a valid Stripe signature over
+the raw request body; unsigned Postman JSON cannot substitute for a Stripe event.

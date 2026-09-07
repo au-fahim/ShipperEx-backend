@@ -25,6 +25,7 @@
     { "key": "pickupTaskId", "value": "" },
     { "key": "deliveryTaskId", "value": "" },
     { "key": "returnShipmentId", "value": "" },
+    { "key": "sessionId", "value": "" },
     { "key": "notificationId", "value": "" },
     { "key": "userId", "value": "" },
     { "key": "rateId", "value": "" },
@@ -240,12 +241,12 @@
           "name": "Stripe Success Reconciliation",
           "request": {
             "method": "GET",
-            "url": "{{baseUrl}}/payments/success?session_id=replace-with-checkout-session-id"
+            "url": "{{baseUrl}}/payments/success?session_id={{sessionId}}"
           }
         },
         {
           "name": "Stripe Cancel",
-          "request": { "method": "GET", "url": "{{baseUrl}}/payments/cancel" }
+          "request": { "method": "GET", "url": "{{baseUrl}}/payments/cancel?session_id={{sessionId}}" }
         }
       ]
     },
@@ -373,6 +374,7 @@
                 "exec": [
                   "const d = pm.response.json().data;",
                   "if (d.payment?.id) pm.collectionVariables.set('paymentId', d.payment.id);",
+                  "if (d.sessionId) pm.collectionVariables.set('sessionId', d.sessionId);",
                   "console.log('Open this Checkout URL in a browser:', d.checkoutUrl);"
                 ]
               }
