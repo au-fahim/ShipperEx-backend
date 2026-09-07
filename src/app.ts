@@ -9,7 +9,8 @@ import { notFound } from "./middlewares/notFound.js";
 import { apiRateLimiter } from "./middlewares/rateLimiter.js";
 import { routes } from "./routes.js";
 
-const createHelmetMiddleware = helmetModule.default as unknown as () => RequestHandler;
+const createHelmetMiddleware =
+  helmetModule.default as unknown as () => RequestHandler;
 
 export const app = express();
 
@@ -27,6 +28,16 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(apiRateLimiter);
 
+app.get("/", (_req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Welcome to the ShipperEx Courier & Logistics Platform API",
+    data: {
+      healthCheck: "/api/v1/health",
+      apiBaseUrl: "/api/v1",
+    },
+  });
+});
 app.use("/api/v1", routes);
 
 app.use(notFound);
