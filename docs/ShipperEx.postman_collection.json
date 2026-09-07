@@ -1,0 +1,919 @@
+{
+  "info": {
+    "name": "ShipperEx Backend API",
+    "description": "Role-organized assignment collection. Run Public logins first, then use the Customer, Manager, Courier, and Admin folders. Complete Stripe Checkout in a browser; never fake a paid status.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api/v1" },
+    { "key": "customerToken", "value": "" },
+    { "key": "managerToken", "value": "" },
+    { "key": "destinationManagerToken", "value": "" },
+    { "key": "courierToken", "value": "" },
+    { "key": "destinationCourierToken", "value": "" },
+    { "key": "adminToken", "value": "" },
+    { "key": "refreshToken", "value": "" },
+    { "key": "originCountryId", "value": "" },
+    { "key": "destinationCountryId", "value": "" },
+    { "key": "originHubId", "value": "" },
+    { "key": "destinationHubId", "value": "" },
+    { "key": "shipmentId", "value": "" },
+    { "key": "trackingNumber", "value": "" },
+    { "key": "paymentId", "value": "" },
+    { "key": "pickupCourierId", "value": "" },
+    { "key": "deliveryCourierId", "value": "" },
+    { "key": "pickupTaskId", "value": "" },
+    { "key": "deliveryTaskId", "value": "" },
+    { "key": "returnShipmentId", "value": "" },
+    { "key": "notificationId", "value": "" },
+    { "key": "userId", "value": "" },
+    { "key": "rateId", "value": "" },
+    { "key": "hubId", "value": "" },
+    { "key": "staffId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Public",
+      "item": [
+        { "name": "Health", "request": { "method": "GET", "url": "{{baseUrl}}/health" } },
+        {
+          "name": "Register Customer",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Customer\",\n  \"email\": \"postman.customer@example.com\",\n  \"password\": \"Customer@12345\",\n  \"phone\": \"+8801700000099\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/register"
+          }
+        },
+        {
+          "name": "Login Customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const d = pm.response.json().data;",
+                  "pm.collectionVariables.set('customerToken', d.accessToken);",
+                  "pm.collectionVariables.set('refreshToken', d.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer@shipperex.com\",\n  \"password\": \"Customer@12345\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/login"
+          }
+        },
+        {
+          "name": "Login Origin Manager",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.collectionVariables.set('managerToken', pm.response.json().data.accessToken);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"manager@shipperex.com\",\n  \"password\": \"Manager@12345\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/login"
+          }
+        },
+        {
+          "name": "Login Destination Manager",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.collectionVariables.set('destinationManagerToken', pm.response.json().data.accessToken);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"manager.lima@shipperex.com\",\n  \"password\": \"Manager@12345\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/login"
+          }
+        },
+        {
+          "name": "Login Origin Courier",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const d = pm.response.json().data;",
+                  "pm.collectionVariables.set('courierToken', d.accessToken);",
+                  "pm.collectionVariables.set('pickupCourierId', d.user.staffProfile.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"rahim.courier@shipperex.com\",\n  \"password\": \"Courier@12345\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/login"
+          }
+        },
+        {
+          "name": "Login Destination Courier",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const d = pm.response.json().data;",
+                  "pm.collectionVariables.set('destinationCourierToken', d.accessToken);",
+                  "pm.collectionVariables.set('deliveryCourierId', d.user.staffProfile.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"carlos.courier@shipperex.com\",\n  \"password\": \"Courier@12345\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/login"
+          }
+        },
+        {
+          "name": "Login Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.collectionVariables.set('adminToken', pm.response.json().data.accessToken);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@shipperex.com\",\n  \"password\": \"Admin@12345\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/login"
+          }
+        },
+        {
+          "name": "Google Login Customer",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"idToken\": \"paste-google-id-token\"\n}" },
+            "url": "{{baseUrl}}/auth/google"
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}" },
+            "url": "{{baseUrl}}/auth/refresh-token"
+          }
+        },
+        {
+          "name": "Countries",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const rows = pm.response.json().data;",
+                  "const bd = rows.find((x) => x.iso2Code === 'BD');",
+                  "const pe = rows.find((x) => x.iso2Code === 'PE');",
+                  "if (bd) pm.collectionVariables.set('originCountryId', bd.id);",
+                  "if (pe) pm.collectionVariables.set('destinationCountryId', pe.id);"
+                ]
+              }
+            }
+          ],
+          "request": { "method": "GET", "url": "{{baseUrl}}/countries" }
+        },
+        {
+          "name": "Track Shipment",
+          "request": { "method": "GET", "url": "{{baseUrl}}/tracking/{{trackingNumber}}" }
+        },
+        {
+          "name": "Stripe Webhook (Stripe CLI Only)",
+          "request": {
+            "description": "Stripe CLI supplies the raw event body and valid Stripe-Signature header. A hand-written Postman request is expected to fail signature verification.",
+            "method": "POST",
+            "header": [{ "key": "Stripe-Signature", "value": "generated-by-stripe-cli" }],
+            "body": { "mode": "raw", "raw": "{}" },
+            "url": "{{baseUrl}}/payments/webhook"
+          }
+        },
+        {
+          "name": "Stripe Success Reconciliation",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/payments/success?session_id=replace-with-checkout-session-id"
+          }
+        },
+        {
+          "name": "Stripe Cancel",
+          "request": { "method": "GET", "url": "{{baseUrl}}/payments/cancel" }
+        }
+      ]
+    },
+    {
+      "name": "Customer",
+      "auth": {
+        "type": "bearer",
+        "bearer": [{ "key": "token", "value": "{{customerToken}}", "type": "string" }]
+      },
+      "item": [
+        { "name": "My Profile", "request": { "method": "GET", "url": "{{baseUrl}}/users/me" } },
+        {
+          "name": "Update My Profile",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"ShipperEx Customer Updated\",\n  \"phone\": \"+8801700000000\"\n}"
+            },
+            "url": "{{baseUrl}}/users/me"
+          }
+        },
+        {
+          "name": "List Hubs",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const rows = pm.response.json().data;",
+                  "const origin = rows.find((x) => x.code === 'CTG-HUB');",
+                  "const destination = rows.find((x) => x.code === 'LIM-HUB');",
+                  "if (origin) pm.collectionVariables.set('originHubId', origin.id);",
+                  "if (destination) pm.collectionVariables.set('destinationHubId', destination.id);"
+                ]
+              }
+            }
+          ],
+          "request": { "method": "GET", "url": "{{baseUrl}}/hubs?limit=100" }
+        },
+        {
+          "name": "Export Quote",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"direction\": \"EXPORT\",\n  \"shipmentType\": \"PARCEL\",\n  \"originCountryId\": \"{{originCountryId}}\",\n  \"destinationCountryId\": \"{{destinationCountryId}}\",\n  \"weightKg\": 2.5,\n  \"lengthCm\": 30,\n  \"widthCm\": 20,\n  \"heightCm\": 15\n}"
+            },
+            "url": "{{baseUrl}}/shipments/quote"
+          }
+        },
+        {
+          "name": "Import Quote",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"direction\": \"IMPORT\",\n  \"shipmentType\": \"DOCUMENT\",\n  \"originCountryId\": \"{{destinationCountryId}}\",\n  \"destinationCountryId\": \"{{originCountryId}}\",\n  \"weightKg\": 0.5\n}"
+            },
+            "url": "{{baseUrl}}/shipments/quote"
+          }
+        },
+        {
+          "name": "Create Export Shipment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const d = pm.response.json().data;",
+                  "pm.collectionVariables.set('shipmentId', d.id);",
+                  "pm.collectionVariables.set('trackingNumber', d.trackingNumber);",
+                  "pm.collectionVariables.set('paymentId', d.payment.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"direction\": \"EXPORT\",\n  \"shipmentType\": \"PARCEL\",\n  \"originCountryId\": \"{{originCountryId}}\",\n  \"destinationCountryId\": \"{{destinationCountryId}}\",\n  \"originHubId\": \"{{originHubId}}\",\n  \"destinationHubId\": \"{{destinationHubId}}\",\n  \"weightKg\": 2.5,\n  \"lengthCm\": 30,\n  \"widthCm\": 20,\n  \"heightCm\": 15,\n  \"pickupScheduledAt\": \"2026-09-10T10:00:00.000Z\",\n  \"sender\": { \"name\": \"Sender Name\", \"phone\": \"+8801700000001\", \"email\": \"sender@example.com\", \"address\": \"Agrabad Commercial Area\", \"city\": \"Chattogram\", \"countryId\": \"{{originCountryId}}\", \"postalCode\": \"4100\" },\n  \"recipient\": { \"name\": \"Receiver Name\", \"phone\": \"+51955501002\", \"email\": \"receiver@example.com\", \"address\": \"Miraflores District\", \"city\": \"Lima\", \"countryId\": \"{{destinationCountryId}}\", \"postalCode\": \"15074\" }\n}"
+            },
+            "url": "{{baseUrl}}/shipments"
+          }
+        },
+        {
+          "name": "My Shipments",
+          "request": { "method": "GET", "url": "{{baseUrl}}/shipments/my?page=1&limit=10" }
+        },
+        {
+          "name": "Shipment Detail",
+          "request": { "method": "GET", "url": "{{baseUrl}}/shipments/{{shipmentId}}" }
+        },
+        {
+          "name": "Shipment Timeline",
+          "request": { "method": "GET", "url": "{{baseUrl}}/shipments/{{shipmentId}}/timeline" }
+        },
+        {
+          "name": "Update Unpaid Shipment",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pickupScheduledAt\": \"2026-09-11T10:00:00.000Z\"\n}"
+            },
+            "url": "{{baseUrl}}/shipments/{{shipmentId}}"
+          }
+        },
+        {
+          "name": "Delete Eligible Shipment",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/shipments/{{shipmentId}}" }
+        },
+        {
+          "name": "Initiate Stripe Checkout",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const d = pm.response.json().data;",
+                  "if (d.payment?.id) pm.collectionVariables.set('paymentId', d.payment.id);",
+                  "console.log('Open this Checkout URL in a browser:', d.checkoutUrl);"
+                ]
+              }
+            }
+          ],
+          "request": { "method": "POST", "url": "{{baseUrl}}/payments/{{shipmentId}}/initiate" }
+        },
+        { "name": "My Payments", "request": { "method": "GET", "url": "{{baseUrl}}/payments/my" } },
+        {
+          "name": "Payment Detail",
+          "request": { "method": "GET", "url": "{{baseUrl}}/payments/{{paymentId}}" }
+        },
+        {
+          "name": "Create Return Order For Held Shipment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const d = pm.response.json().data;",
+                  "if (d.id) pm.collectionVariables.set('returnShipmentId', d.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Please return this held shipment to me\"\n}"
+            },
+            "url": "{{baseUrl}}/shipments/{{shipmentId}}/return-orders"
+          }
+        },
+        {
+          "name": "Initiate Return Stripe Checkout",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/payments/{{returnShipmentId}}/initiate"
+          }
+        },
+        {
+          "name": "Notifications",
+          "request": { "method": "GET", "url": "{{baseUrl}}/notifications" }
+        },
+        {
+          "name": "Mark Notification Read",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/notifications/{{notificationId}}/read"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}" },
+            "url": "{{baseUrl}}/auth/logout"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Manager",
+      "auth": {
+        "type": "bearer",
+        "bearer": [{ "key": "token", "value": "{{managerToken}}", "type": "string" }]
+      },
+      "item": [
+        {
+          "name": "List Hub Couriers",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const rows = pm.response.json().data;",
+                  "if (rows[0]) pm.collectionVariables.set('pickupCourierId', rows[0].id);"
+                ]
+              }
+            }
+          ],
+          "request": { "method": "GET", "url": "{{baseUrl}}/couriers?limit=50" }
+        },
+        {
+          "name": "List Hub Shipments",
+          "request": { "method": "GET", "url": "{{baseUrl}}/shipments?page=1&limit=20" }
+        },
+        {
+          "name": "List Shipment Rates",
+          "request": { "method": "GET", "url": "{{baseUrl}}/shipment-rates?page=1&limit=20" }
+        },
+        {
+          "name": "Hub Shipment Report",
+          "request": { "method": "GET", "url": "{{baseUrl}}/admin/reports/shipments" }
+        },
+        {
+          "name": "Assign Pickup Courier",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const tasks = pm.response.json().data.courierTasks;",
+                  "const task = tasks.find((x) => x.taskType === 'PICKUP' && x.status === 'ASSIGNED');",
+                  "if (task) pm.collectionVariables.set('pickupTaskId', task.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"courierId\": \"{{pickupCourierId}}\",\n  \"taskType\": \"PICKUP\",\n  \"note\": \"Collect from the sender during the scheduled window\"\n}"
+            },
+            "url": "{{baseUrl}}/shipments/{{shipmentId}}/assignments"
+          }
+        },
+        {
+          "name": "Auto Assign Pickup Batch",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"taskType\": \"PICKUP\",\n  \"limit\": 20,\n  \"note\": \"Least-loaded pickup assignment\"\n}"
+            },
+            "url": "{{baseUrl}}/shipments/auto-assign"
+          }
+        },
+        {
+          "name": "Mark At Origin Hub",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"AT_ORIGIN_HUB\",\n  \"currentHubId\": \"{{originHubId}}\",\n  \"location\": \"Chattogram Hub\",\n  \"note\": \"Shipment received and sorted at origin hub\"\n}"
+            },
+            "url": "{{baseUrl}}/shipments/{{shipmentId}}/status"
+          }
+        },
+        {
+          "name": "Mark In Transit",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"IN_TRANSIT\",\n  \"location\": \"International transit\",\n  \"note\": \"Shipment forwarded toward destination country\"\n}"
+            },
+            "url": "{{baseUrl}}/shipments/{{shipmentId}}/status"
+          }
+        },
+        {
+          "name": "Add Transit Checkpoint",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"location\": \"Transit airport\",\n  \"note\": \"Shipment cleared the transit checkpoint\"\n}"
+            },
+            "url": "{{baseUrl}}/shipments/{{shipmentId}}/checkpoints"
+          }
+        },
+        {
+          "name": "Destination - Mark At Destination Hub",
+          "auth": {
+            "type": "bearer",
+            "bearer": [{ "key": "token", "value": "{{destinationManagerToken}}", "type": "string" }]
+          },
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"AT_DESTINATION_HUB\",\n  \"currentHubId\": \"{{destinationHubId}}\",\n  \"location\": \"Lima Hub\",\n  \"note\": \"Shipment received at destination hub\"\n}"
+            },
+            "url": "{{baseUrl}}/shipments/{{shipmentId}}/status"
+          }
+        },
+        {
+          "name": "Destination - Assign Delivery Courier",
+          "auth": {
+            "type": "bearer",
+            "bearer": [{ "key": "token", "value": "{{destinationManagerToken}}", "type": "string" }]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const tasks = pm.response.json().data.courierTasks;",
+                  "const task = tasks.find((x) => x.taskType === 'DELIVERY' && x.status === 'ASSIGNED');",
+                  "if (task) pm.collectionVariables.set('deliveryTaskId', task.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"courierId\": \"{{deliveryCourierId}}\",\n  \"taskType\": \"DELIVERY\",\n  \"note\": \"Deliver from Lima hub\"\n}"
+            },
+            "url": "{{baseUrl}}/shipments/{{shipmentId}}/assignments"
+          }
+        },
+        {
+          "name": "Destination - Confirm Hub Collection",
+          "auth": {
+            "type": "bearer",
+            "bearer": [{ "key": "token", "value": "{{destinationManagerToken}}", "type": "string" }]
+          },
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Receiver verified and collected the held shipment\"\n}"
+            },
+            "url": "{{baseUrl}}/shipments/{{shipmentId}}/collect"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Courier",
+      "auth": {
+        "type": "bearer",
+        "bearer": [{ "key": "token", "value": "{{courierToken}}", "type": "string" }]
+      },
+      "item": [
+        {
+          "name": "My Pickup Tasks",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const rows = pm.response.json().data;",
+                  "if (rows[0]) pm.collectionVariables.set('pickupTaskId', rows[0].id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/courier/tasks?taskType=PICKUP&status=ASSIGNED"
+          }
+        },
+        {
+          "name": "Pickup Task Detail",
+          "request": { "method": "GET", "url": "{{baseUrl}}/courier/tasks/{{pickupTaskId}}" }
+        },
+        {
+          "name": "Start Pickup",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Courier is travelling to the sender\"\n}"
+            },
+            "url": "{{baseUrl}}/courier/tasks/{{pickupTaskId}}/start"
+          }
+        },
+        {
+          "name": "Complete Pickup",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"location\": \"Chattogram\",\n  \"note\": \"Parcel collected from sender\"\n}"
+            },
+            "url": "{{baseUrl}}/courier/tasks/{{pickupTaskId}}/complete"
+          }
+        },
+        {
+          "name": "Destination - My Delivery Tasks",
+          "auth": {
+            "type": "bearer",
+            "bearer": [{ "key": "token", "value": "{{destinationCourierToken}}", "type": "string" }]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const rows = pm.response.json().data;",
+                  "if (rows[0]) pm.collectionVariables.set('deliveryTaskId', rows[0].id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/courier/tasks?taskType=DELIVERY&status=ASSIGNED"
+          }
+        },
+        {
+          "name": "Destination - Start Delivery",
+          "auth": {
+            "type": "bearer",
+            "bearer": [{ "key": "token", "value": "{{destinationCourierToken}}", "type": "string" }]
+          },
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Out for delivery from Lima hub\"\n}"
+            },
+            "url": "{{baseUrl}}/courier/tasks/{{deliveryTaskId}}/start"
+          }
+        },
+        {
+          "name": "Destination - Complete Delivery",
+          "auth": {
+            "type": "bearer",
+            "bearer": [{ "key": "token", "value": "{{destinationCourierToken}}", "type": "string" }]
+          },
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"location\": \"Lima\",\n  \"note\": \"Recipient accepted the parcel\"\n}"
+            },
+            "url": "{{baseUrl}}/courier/tasks/{{deliveryTaskId}}/complete"
+          }
+        },
+        {
+          "name": "Destination - Fail Delivery Attempt",
+          "auth": {
+            "type": "bearer",
+            "bearer": [{ "key": "token", "value": "{{destinationCourierToken}}", "type": "string" }]
+          },
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Recipient was unavailable\",\n  \"location\": \"Lima\",\n  \"note\": \"Called recipient before recording this attempt\",\n  \"contactAttempted\": true\n}"
+            },
+            "url": "{{baseUrl}}/courier/tasks/{{deliveryTaskId}}/fail"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "auth": {
+        "type": "bearer",
+        "bearer": [{ "key": "token", "value": "{{adminToken}}", "type": "string" }]
+      },
+      "item": [
+        {
+          "name": "Dashboard Statistics",
+          "request": { "method": "GET", "url": "{{baseUrl}}/admin/dashboard-stats" }
+        },
+        {
+          "name": "Shipment Report",
+          "request": { "method": "GET", "url": "{{baseUrl}}/admin/reports/shipments" }
+        },
+        {
+          "name": "Audit Logs",
+          "request": { "method": "GET", "url": "{{baseUrl}}/admin/audit-logs?page=1&limit=20" }
+        },
+        {
+          "name": "List Users",
+          "request": { "method": "GET", "url": "{{baseUrl}}/admin/users?page=1&limit=20" }
+        },
+        {
+          "name": "User Detail",
+          "request": { "method": "GET", "url": "{{baseUrl}}/admin/users/{{userId}}" }
+        },
+        {
+          "name": "Block User",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"BLOCKED\"\n}" },
+            "url": "{{baseUrl}}/admin/users/{{userId}}/status"
+          }
+        },
+        {
+          "name": "Update Safe User Role",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"role\": \"CUSTOMER\"\n}" },
+            "url": "{{baseUrl}}/admin/users/{{userId}}/role"
+          }
+        },
+        {
+          "name": "Create Manager",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const d = pm.response.json().data;",
+                  "if (d.id) pm.collectionVariables.set('staffId', d.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Demo Hub Manager\",\n  \"email\": \"demo.manager@example.com\",\n  \"password\": \"Manager@12345\",\n  \"phone\": \"+8801700000088\",\n  \"hubId\": \"{{originHubId}}\"\n}"
+            },
+            "url": "{{baseUrl}}/admin/staff/managers"
+          }
+        },
+        {
+          "name": "Create Courier",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const d = pm.response.json().data;",
+                  "if (d.id) pm.collectionVariables.set('staffId', d.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Demo Courier\",\n  \"email\": \"demo.courier@example.com\",\n  \"password\": \"Courier@12345\",\n  \"phone\": \"+8801700000077\",\n  \"hubId\": \"{{originHubId}}\"\n}"
+            },
+            "url": "{{baseUrl}}/admin/staff/couriers"
+          }
+        },
+        {
+          "name": "All Couriers",
+          "request": { "method": "GET", "url": "{{baseUrl}}/couriers?limit=100" }
+        },
+        {
+          "name": "Update Courier",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"availabilityStatus\": \"AVAILABLE\"\n}" },
+            "url": "{{baseUrl}}/couriers/{{staffId}}"
+          }
+        },
+        {
+          "name": "Delete Idle Courier",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/couriers/{{staffId}}" }
+        },
+        {
+          "name": "Create Hub",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const d = pm.response.json().data;",
+                  "if (d.id) pm.collectionVariables.set('hubId', d.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Demo Assignment Hub\",\n  \"code\": \"DEMO-HUB\",\n  \"city\": \"Chattogram\",\n  \"countryId\": \"{{originCountryId}}\",\n  \"address\": \"Demo logistics district\",\n  \"isActive\": true\n}"
+            },
+            "url": "{{baseUrl}}/hubs"
+          }
+        },
+        {
+          "name": "Update Hub",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"address\": \"Updated demo logistics district\"\n}"
+            },
+            "url": "{{baseUrl}}/hubs/{{hubId}}"
+          }
+        },
+        {
+          "name": "Delete Hub",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/hubs/{{hubId}}" }
+        },
+        {
+          "name": "Create Shipment Rate",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const d = pm.response.json().data;",
+                  "if (d.id) pm.collectionVariables.set('rateId', d.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"direction\": \"EXPORT\",\n  \"zoneCode\": \"M\",\n  \"shipmentType\": \"PARCEL\",\n  \"minWeightKg\": 20.01,\n  \"maxWeightKg\": 25,\n  \"priceUsd\": 150,\n  \"isActive\": true\n}"
+            },
+            "url": "{{baseUrl}}/shipment-rates"
+          }
+        },
+        {
+          "name": "Update Shipment Rate",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"priceUsd\": 155\n}" },
+            "url": "{{baseUrl}}/shipment-rates/{{rateId}}"
+          }
+        },
+        {
+          "name": "Delete Shipment Rate",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/shipment-rates/{{rateId}}" }
+        }
+      ]
+    }
+  ]
+}
