@@ -59,7 +59,7 @@ export const courierController = {
     const result = await courierService.deleteCourier(req.params.id as string, authUser.userId);
 
     sendResponse({
-      res,    
+      res,
       statusCode: httpStatus.OK,
       message: "Courier deleted successfully",
       data: result,
