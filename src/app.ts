@@ -31,3 +31,5 @@ app.use("/api/v1", routes);
 
 app.use(notFound);
 app.use(globalErrorHandler);
+
+export default app;
