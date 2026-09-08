@@ -10,6 +10,8 @@ export const runSerializableTransaction = async <T>(
     try {
       return await prisma.$transaction(operation, {
         isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
+        maxWait: 5_000,
+        timeout: 15_000,
       });
     } catch (error) {
       lastError = error;
