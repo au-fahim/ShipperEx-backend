@@ -70,5 +70,3 @@ still awaits payment. Already paid payments are not downgraded by cancellation.
 - A hub outside the selected origin/destination country receives `400`.
 - Invalid request body receives structured Zod errors.
 - Unknown resource receives `404`.
-
-Thunder Client is not required.

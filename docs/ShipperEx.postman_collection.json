@@ -1,11 +1,14 @@
 {
   "info": {
     "name": "ShipperEx Backend API",
-    "description": "Role-organized assignment collection. Run Public logins first, then use the Customer, Manager, Courier, and Admin folders. Complete Stripe Checkout in a browser; never fake a paid status.",
+    "description": "A Courier & Logistics Platform REST API for international document and parcel shipments. Customers request pickups, pay through Stripe Checkout, and track shipments. Hub managers assign work, couriers complete pickup and delivery tasks, and administrators manage users, hubs, and shipment rates. Run Public logins first, then use the Customer, Manager, Courier, and Admin folders. Complete Stripe Checkout in a browser.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    { "key": "baseUrl", "value": "http://localhost:5000/api/v1" },
+    {
+      "key": "baseUrl",
+      "value": "https://shipperex-backend.vercel.app/api/v1"
+    },
     { "key": "customerToken", "value": "" },
     { "key": "managerToken", "value": "" },
     { "key": "destinationManagerToken", "value": "" },
@@ -13,10 +16,10 @@
     { "key": "destinationCourierToken", "value": "" },
     { "key": "adminToken", "value": "" },
     { "key": "refreshToken", "value": "" },
-    { "key": "originCountryId", "value": "" },
-    { "key": "destinationCountryId", "value": "" },
-    { "key": "originHubId", "value": "" },
-    { "key": "destinationHubId", "value": "" },
+    { "key": "originCountryId", "value": "cmtrae5w9000fwchhsctsnwjw" },
+    { "key": "destinationCountryId", "value": "cmtrae6pm000zwchhrako8oyu" },
+    { "key": "originHubId", "value": "cmtraf15i00b5wchhnjkc1u46" },
+    { "key": "destinationHubId", "value": "cmtraf1mh00b7wchhqf3gu9ms" },
     { "key": "shipmentId", "value": "" },
     { "key": "trackingNumber", "value": "" },
     { "key": "paymentId", "value": "" },
@@ -36,7 +39,10 @@
     {
       "name": "Public",
       "item": [
-        { "name": "Health", "request": { "method": "GET", "url": "{{baseUrl}}/health" } },
+        {
+          "name": "Health",
+          "request": { "method": "GET", "url": "{{baseUrl}}/health" }
+        },
         {
           "name": "Register Customer",
           "request": {
@@ -192,7 +198,10 @@
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"idToken\": \"paste-google-id-token\"\n}" },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idToken\": \"paste-google-id-token\"\n}"
+            },
             "url": "{{baseUrl}}/auth/google"
           }
         },
@@ -201,7 +210,10 @@
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}" },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
             "url": "{{baseUrl}}/auth/refresh-token"
           }
         },
@@ -225,14 +237,19 @@
         },
         {
           "name": "Track Shipment",
-          "request": { "method": "GET", "url": "{{baseUrl}}/tracking/{{trackingNumber}}" }
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/tracking/{{trackingNumber}}"
+          }
         },
         {
           "name": "Stripe Webhook (Stripe CLI Only)",
           "request": {
             "description": "Stripe CLI supplies the raw event body and valid Stripe-Signature header. A hand-written Postman request is expected to fail signature verification.",
             "method": "POST",
-            "header": [{ "key": "Stripe-Signature", "value": "generated-by-stripe-cli" }],
+            "header": [
+              { "key": "Stripe-Signature", "value": "generated-by-stripe-cli" }
+            ],
             "body": { "mode": "raw", "raw": "{}" },
             "url": "{{baseUrl}}/payments/webhook"
           }
@@ -246,7 +263,10 @@
         },
         {
           "name": "Stripe Cancel",
-          "request": { "method": "GET", "url": "{{baseUrl}}/payments/cancel?session_id={{sessionId}}" }
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/payments/cancel?session_id={{sessionId}}"
+          }
         }
       ]
     },
@@ -254,10 +274,15 @@
       "name": "Customer",
       "auth": {
         "type": "bearer",
-        "bearer": [{ "key": "token", "value": "{{customerToken}}", "type": "string" }]
+        "bearer": [
+          { "key": "token", "value": "{{customerToken}}", "type": "string" }
+        ]
       },
       "item": [
-        { "name": "My Profile", "request": { "method": "GET", "url": "{{baseUrl}}/users/me" } },
+        {
+          "name": "My Profile",
+          "request": { "method": "GET", "url": "{{baseUrl}}/users/me" }
+        },
         {
           "name": "Update My Profile",
           "request": {
@@ -339,15 +364,24 @@
         },
         {
           "name": "My Shipments",
-          "request": { "method": "GET", "url": "{{baseUrl}}/shipments/my?page=1&limit=10" }
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/shipments/my?page=1&limit=10"
+          }
         },
         {
           "name": "Shipment Detail",
-          "request": { "method": "GET", "url": "{{baseUrl}}/shipments/{{shipmentId}}" }
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/shipments/{{shipmentId}}"
+          }
         },
         {
           "name": "Shipment Timeline",
-          "request": { "method": "GET", "url": "{{baseUrl}}/shipments/{{shipmentId}}/timeline" }
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/shipments/{{shipmentId}}/timeline"
+          }
         },
         {
           "name": "Update Unpaid Shipment",
@@ -363,7 +397,10 @@
         },
         {
           "name": "Delete Eligible Shipment",
-          "request": { "method": "DELETE", "url": "{{baseUrl}}/shipments/{{shipmentId}}" }
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/shipments/{{shipmentId}}"
+          }
         },
         {
           "name": "Initiate Stripe Checkout",
@@ -380,12 +417,21 @@
               }
             }
           ],
-          "request": { "method": "POST", "url": "{{baseUrl}}/payments/{{shipmentId}}/initiate" }
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/payments/{{shipmentId}}/initiate"
+          }
         },
-        { "name": "My Payments", "request": { "method": "GET", "url": "{{baseUrl}}/payments/my" } },
+        {
+          "name": "My Payments",
+          "request": { "method": "GET", "url": "{{baseUrl}}/payments/my" }
+        },
         {
           "name": "Payment Detail",
-          "request": { "method": "GET", "url": "{{baseUrl}}/payments/{{paymentId}}" }
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/payments/{{paymentId}}"
+          }
         },
         {
           "name": "Create Return Order For Held Shipment",
@@ -433,7 +479,10 @@
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}" },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
             "url": "{{baseUrl}}/auth/logout"
           }
         }
@@ -443,7 +492,9 @@
       "name": "Manager",
       "auth": {
         "type": "bearer",
-        "bearer": [{ "key": "token", "value": "{{managerToken}}", "type": "string" }]
+        "bearer": [
+          { "key": "token", "value": "{{managerToken}}", "type": "string" }
+        ]
       },
       "item": [
         {
@@ -463,15 +514,24 @@
         },
         {
           "name": "List Hub Shipments",
-          "request": { "method": "GET", "url": "{{baseUrl}}/shipments?page=1&limit=20" }
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/shipments?page=1&limit=20"
+          }
         },
         {
           "name": "List Shipment Rates",
-          "request": { "method": "GET", "url": "{{baseUrl}}/shipment-rates?page=1&limit=20" }
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/shipment-rates?page=1&limit=20"
+          }
         },
         {
           "name": "Hub Shipment Report",
-          "request": { "method": "GET", "url": "{{baseUrl}}/admin/reports/shipments" }
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/admin/reports/shipments"
+          }
         },
         {
           "name": "Assign Pickup Courier",
@@ -549,7 +609,13 @@
           "name": "Destination - Mark At Destination Hub",
           "auth": {
             "type": "bearer",
-            "bearer": [{ "key": "token", "value": "{{destinationManagerToken}}", "type": "string" }]
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{destinationManagerToken}}",
+                "type": "string"
+              }
+            ]
           },
           "request": {
             "method": "PATCH",
@@ -565,7 +631,13 @@
           "name": "Destination - Assign Delivery Courier",
           "auth": {
             "type": "bearer",
-            "bearer": [{ "key": "token", "value": "{{destinationManagerToken}}", "type": "string" }]
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{destinationManagerToken}}",
+                "type": "string"
+              }
+            ]
           },
           "event": [
             {
@@ -593,7 +665,13 @@
           "name": "Destination - Confirm Hub Collection",
           "auth": {
             "type": "bearer",
-            "bearer": [{ "key": "token", "value": "{{destinationManagerToken}}", "type": "string" }]
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{destinationManagerToken}}",
+                "type": "string"
+              }
+            ]
           },
           "request": {
             "method": "POST",
@@ -611,7 +689,9 @@
       "name": "Courier",
       "auth": {
         "type": "bearer",
-        "bearer": [{ "key": "token", "value": "{{courierToken}}", "type": "string" }]
+        "bearer": [
+          { "key": "token", "value": "{{courierToken}}", "type": "string" }
+        ]
       },
       "item": [
         {
@@ -634,7 +714,10 @@
         },
         {
           "name": "Pickup Task Detail",
-          "request": { "method": "GET", "url": "{{baseUrl}}/courier/tasks/{{pickupTaskId}}" }
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/courier/tasks/{{pickupTaskId}}"
+          }
         },
         {
           "name": "Start Pickup",
@@ -664,7 +747,13 @@
           "name": "Destination - My Delivery Tasks",
           "auth": {
             "type": "bearer",
-            "bearer": [{ "key": "token", "value": "{{destinationCourierToken}}", "type": "string" }]
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{destinationCourierToken}}",
+                "type": "string"
+              }
+            ]
           },
           "event": [
             {
@@ -686,7 +775,13 @@
           "name": "Destination - Start Delivery",
           "auth": {
             "type": "bearer",
-            "bearer": [{ "key": "token", "value": "{{destinationCourierToken}}", "type": "string" }]
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{destinationCourierToken}}",
+                "type": "string"
+              }
+            ]
           },
           "request": {
             "method": "PATCH",
@@ -702,7 +797,13 @@
           "name": "Destination - Complete Delivery",
           "auth": {
             "type": "bearer",
-            "bearer": [{ "key": "token", "value": "{{destinationCourierToken}}", "type": "string" }]
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{destinationCourierToken}}",
+                "type": "string"
+              }
+            ]
           },
           "request": {
             "method": "PATCH",
@@ -718,7 +819,13 @@
           "name": "Destination - Fail Delivery Attempt",
           "auth": {
             "type": "bearer",
-            "bearer": [{ "key": "token", "value": "{{destinationCourierToken}}", "type": "string" }]
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{destinationCourierToken}}",
+                "type": "string"
+              }
+            ]
           },
           "request": {
             "method": "PATCH",
@@ -736,28 +843,45 @@
       "name": "Admin",
       "auth": {
         "type": "bearer",
-        "bearer": [{ "key": "token", "value": "{{adminToken}}", "type": "string" }]
+        "bearer": [
+          { "key": "token", "value": "{{adminToken}}", "type": "string" }
+        ]
       },
       "item": [
         {
           "name": "Dashboard Statistics",
-          "request": { "method": "GET", "url": "{{baseUrl}}/admin/dashboard-stats" }
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/admin/dashboard-stats"
+          }
         },
         {
           "name": "Shipment Report",
-          "request": { "method": "GET", "url": "{{baseUrl}}/admin/reports/shipments" }
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/admin/reports/shipments"
+          }
         },
         {
           "name": "Audit Logs",
-          "request": { "method": "GET", "url": "{{baseUrl}}/admin/audit-logs?page=1&limit=20" }
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/admin/audit-logs?page=1&limit=20"
+          }
         },
         {
           "name": "List Users",
-          "request": { "method": "GET", "url": "{{baseUrl}}/admin/users?page=1&limit=20" }
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/admin/users?page=1&limit=20"
+          }
         },
         {
           "name": "User Detail",
-          "request": { "method": "GET", "url": "{{baseUrl}}/admin/users/{{userId}}" }
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/admin/users/{{userId}}"
+          }
         },
         {
           "name": "Block User",
@@ -825,20 +949,29 @@
         },
         {
           "name": "All Couriers",
-          "request": { "method": "GET", "url": "{{baseUrl}}/couriers?limit=100" }
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/couriers?limit=100"
+          }
         },
         {
           "name": "Update Courier",
           "request": {
             "method": "PATCH",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"availabilityStatus\": \"AVAILABLE\"\n}" },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"availabilityStatus\": \"AVAILABLE\"\n}"
+            },
             "url": "{{baseUrl}}/couriers/{{staffId}}"
           }
         },
         {
           "name": "Delete Idle Courier",
-          "request": { "method": "DELETE", "url": "{{baseUrl}}/couriers/{{staffId}}" }
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/couriers/{{staffId}}"
+          }
         },
         {
           "name": "Create Hub",
@@ -913,7 +1046,10 @@
         },
         {
           "name": "Delete Shipment Rate",
-          "request": { "method": "DELETE", "url": "{{baseUrl}}/shipment-rates/{{rateId}}" }
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/shipment-rates/{{rateId}}"
+          }
         }
       ]
     }

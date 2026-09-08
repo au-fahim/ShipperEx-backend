@@ -2,22 +2,20 @@
 
 A Courier & Logistics Platform REST API for international document and parcel shipments. Customers request pickups, pay through Stripe Checkout, and track shipments. Hub managers assign work, couriers complete pickup and delivery tasks, and administrators manage users, hubs, and shipment rates.
 
-Built for the Programming Hero B7A6 backend assignment with a modular layered architecture. The application is demonstrated through Postman; no frontend is required.
-
 ## Submission Links
 
-| Item | Link / Details |
-| --- | --- |
-| Backend repository | [au-fahim/ShipperEx-backend](https://github.com/au-fahim/ShipperEx-backend) |
-| Live API | [shipperex-backend.vercel.app](https://shipperex-backend.vercel.app/) |
-| API base URL | `https://shipperex-backend.vercel.app/api/v1` |
-| Health check | [GET /api/v1/health](https://shipperex-backend.vercel.app/api/v1/health) |
-| API documentation | [Endpoint reference](docs/api-endpoints.md) |
-| Postman collection | [Importable collection](docs/ShipperEx.postman_collection.json) |
-| API walkthrough | [Postman testing guide](docs/postman-testing-guide.md) |
-| Demo video | Pending: add the publicly accessible 5-10 minute walkthrough link before submission. |
-| Demo admin email | `admin@shipperex.com` |
-| Demo admin password | `Admin@12345` |
+| Item                | Link / Details                                                                                              |
+| ------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Backend repository  | [au-fahim/ShipperEx-backend](https://github.com/au-fahim/ShipperEx-backend)                                 |
+| Live API            | [shipperex-backend.vercel.app](https://shipperex-backend.vercel.app/)                                       |
+| API base URL        | `https://shipperex-backend.vercel.app/api/v1`                                                               |
+| Health check        | [GET /api/v1/health](https://shipperex-backend.vercel.app/api/v1/health)                                    |
+| API documentation   | [Postman API Documentation](https://documenter.getpostman.com/view/54943329/2sBYAxQ9p9)                     |
+| Postman collection  | [Importable collection](docs/ShipperEx.postman_collection.json)                                             |
+| API walkthrough     | [Postman testing guide](docs/postman-testing-guide.md)                                                      |
+| Demo video          | [Demo Video Drive Link](https://drive.google.com/file/d/1mnYaODg0t6qesIsiVJ9fWq2bJo2PQCrL/view?usp=sharing) |
+| Demo admin email    | `admin@shipperex.com`                                                                                       |
+| Demo admin password | `Admin@12345`                                                                                               |
 
 Demo accounts are created by `pnpm prisma:seed`. Existing admin/customer passwords are not overwritten by seeding; confirm credentials against the submission database if those accounts were changed.
 
@@ -37,19 +35,19 @@ Demo accounts are created by `pnpm prisma:seed`. Existing admin/customer passwor
 
 ## Technology
 
-| Area | Implementation |
-| --- | --- |
-| Runtime | Node.js; use Node.js 24.x for this project |
-| Language / framework | TypeScript 6.0.2, Express 5.2.1 |
-| Database / ORM | PostgreSQL, Prisma 7.10.0, `@prisma/adapter-pg`, `pg` |
-| Validation | Zod 4 |
-| Authentication | `jsonwebtoken`, `bcryptjs`, `google-auth-library` |
-| Payments | Stripe Checkout and webhooks in test mode |
-| Optional caching | Redis through `ioredis` |
-| Security | Helmet, CORS, `express-rate-limit` |
-| Code quality | Biome |
-| Documentation / deployment | Postman, Vercel |
-| Package manager | pnpm 12.3.4 |
+| Area                       | Implementation                                        |
+| -------------------------- | ----------------------------------------------------- |
+| Runtime                    | Node.js; use Node.js 24.x for this project            |
+| Language / framework       | TypeScript 6.0.2, Express 5.2.1                       |
+| Database / ORM             | PostgreSQL, Prisma 7.10.0, `@prisma/adapter-pg`, `pg` |
+| Validation                 | Zod 4                                                 |
+| Authentication             | `jsonwebtoken`, `bcryptjs`, `google-auth-library`     |
+| Payments                   | Stripe Checkout and webhooks in test mode             |
+| Optional caching           | Redis through `ioredis`                               |
+| Security                   | Helmet, CORS, `express-rate-limit`                    |
+| Code quality               | Biome                                                 |
+| Documentation / deployment | Postman, Vercel                                       |
+| Package manager            | pnpm 12.3.4                                           |
 
 Exact dependencies are pinned in `package.json` and `pnpm-lock.yaml`. Use the committed lockfile to reproduce the submitted build.
 
@@ -91,23 +89,23 @@ The [Prisma schema](prisma/schema.prisma) defines timestamps, foreign keys, uniq
 
 ## Roles and Demo Accounts
 
-| Primary role | Staff type | Permissions |
-| --- | --- | --- |
-| `CUSTOMER` | None | Own shipments, quotes, payments, profile, notifications, return requests |
-| `STAFF` | `MANAGER` | Associated hub's shipments, courier assignments, transit operations, reports |
-| `STAFF` | `COURIER` | Own assigned pickup/delivery tasks and permitted task transitions |
-| `ADMIN` | None | User/staff administration, hub/rate management, global reports, audit logs |
+| Primary role | Staff type | Permissions                                                                  |
+| ------------ | ---------- | ---------------------------------------------------------------------------- |
+| `CUSTOMER`   | None       | Own shipments, quotes, payments, profile, notifications, return requests     |
+| `STAFF`      | `MANAGER`  | Associated hub's shipments, courier assignments, transit operations, reports |
+| `STAFF`      | `COURIER`  | Own assigned pickup/delivery tasks and permitted task transitions            |
+| `ADMIN`      | None       | User/staff administration, hub/rate management, global reports, audit logs   |
 
-| Account | Email | Password | Hub |
-| --- | --- | --- | --- |
-| Admin | `admin@shipperex.com` | `Admin@12345` | Global |
-| Customer | `customer@shipperex.com` | `Customer@12345` | None |
-| Origin manager | `manager@shipperex.com` | `Manager@12345` | Chattogram |
-| Origin courier | `rahim.courier@shipperex.com` | `Courier@12345` | Chattogram |
-| Destination manager | `manager.lima@shipperex.com` | `Manager@12345` | Lima |
-| Destination courier | `carlos.courier@shipperex.com` | `Courier@12345` | Lima |
-| New York manager | `manager.newyork@shipperex.com` | `Manager@12345` | New York |
-| New York courier | `john.courier@shipperex.com` | `Courier@12345` | New York |
+| Account             | Email                           | Password         | Hub        |
+| ------------------- | ------------------------------- | ---------------- | ---------- |
+| Admin               | `admin@shipperex.com`           | `Admin@12345`    | Global     |
+| Customer            | `customer@shipperex.com`        | `Customer@12345` | None       |
+| Origin manager      | `manager@shipperex.com`         | `Manager@12345`  | Chattogram |
+| Origin courier      | `rahim.courier@shipperex.com`   | `Courier@12345`  | Chattogram |
+| Destination manager | `manager.lima@shipperex.com`    | `Manager@12345`  | Lima       |
+| Destination courier | `carlos.courier@shipperex.com`  | `Courier@12345`  | Lima       |
+| New York manager    | `manager.newyork@shipperex.com` | `Manager@12345`  | New York   |
+| New York courier    | `john.courier@shipperex.com`    | `Courier@12345`  | New York   |
 
 All password accounts use `POST /api/v1/auth/login`. Only Admin creates managers/couriers through `/admin/staff/managers` and `/admin/staff/couriers`. Public registration always creates a Customer.
 
@@ -158,23 +156,23 @@ pnpm start
 
 Store local values in `.env` and deployed values in Vercel's Environment Variables settings. Never commit `.env`, database passwords, JWT secrets, or Stripe keys.
 
-| Variable | Required / Default | Purpose |
-| --- | --- | --- |
-| `DATABASE_URL` | Required | PostgreSQL connection URL |
-| `JWT_ACCESS_SECRET` | Required, at least 12 characters | Access-token signing secret |
-| `JWT_REFRESH_SECRET` | Required, at least 12 characters | Separate refresh-token signing secret |
-| `STRIPE_SECRET_KEY` | Required | Stripe test secret key, `sk_test_...` |
-| `STRIPE_WEBHOOK_SECRET` | Required | Signing secret for the applicable listener/destination |
-| `STRIPE_SUCCESS_URL` | Required URL | Backend success callback, without query parameters |
-| `STRIPE_CANCEL_URL` | Required URL | Backend cancel callback, without query parameters |
-| `GOOGLE_CLIENT_ID` | Required for Google login | Google web OAuth client ID |
-| `NODE_ENV` | `development` | `development`, `test`, or `production` |
-| `PORT` | `5000` | Local listener port |
-| `JWT_ACCESS_EXPIRES_IN` | `1d` | Access-token lifetime |
-| `JWT_REFRESH_EXPIRES_IN` | `30d` | Keep the default to match stored refresh-token expiry |
-| `REDIS_ENABLED` | `false` | Set `true` to enable tracking cache |
-| `REDIS_URL` | Needed when caching is enabled | Redis connection URL; omit when unused |
-| `CORS_ORIGIN` | `*` | Allowed origin, or comma-separated origins without spaces |
+| Variable                 | Required / Default               | Purpose                                                   |
+| ------------------------ | -------------------------------- | --------------------------------------------------------- |
+| `DATABASE_URL`           | Required                         | PostgreSQL connection URL                                 |
+| `JWT_ACCESS_SECRET`      | Required, at least 12 characters | Access-token signing secret                               |
+| `JWT_REFRESH_SECRET`     | Required, at least 12 characters | Separate refresh-token signing secret                     |
+| `STRIPE_SECRET_KEY`      | Required                         | Stripe test secret key, `sk_test_...`                     |
+| `STRIPE_WEBHOOK_SECRET`  | Required                         | Signing secret for the applicable listener/destination    |
+| `STRIPE_SUCCESS_URL`     | Required URL                     | Backend success callback, without query parameters        |
+| `STRIPE_CANCEL_URL`      | Required URL                     | Backend cancel callback, without query parameters         |
+| `GOOGLE_CLIENT_ID`       | Required for Google login        | Google web OAuth client ID                                |
+| `NODE_ENV`               | `development`                    | `development`, `test`, or `production`                    |
+| `PORT`                   | `5000`                           | Local listener port                                       |
+| `JWT_ACCESS_EXPIRES_IN`  | `1d`                             | Access-token lifetime                                     |
+| `JWT_REFRESH_EXPIRES_IN` | `30d`                            | Keep the default to match stored refresh-token expiry     |
+| `REDIS_ENABLED`          | `false`                          | Set `true` to enable tracking cache                       |
+| `REDIS_URL`              | Needed when caching is enabled   | Redis connection URL; omit when unused                    |
+| `CORS_ORIGIN`            | `*`                              | Allowed origin, or comma-separated origins without spaces |
 
 Local callback settings:
 
@@ -236,8 +234,6 @@ Errors follow a consistent format:
 ```
 
 Demonstrate invalid email (`400`), missing Bearer token (`401`), Customer access to `/admin/users` (`403`), unknown tracking number (`404`), and a sixth active assignment (`409`). Rate limiting returns structured `429` responses after the configured 300 requests per 15-minute window.
-
-## Shipment Business Rules
 
 ### Pricing and Addresses
 
@@ -321,19 +317,19 @@ Redeploy after environment changes. Verify health, login, a database-backed list
 
 ## Checks and Scripts
 
-| Command | Purpose |
-| --- | --- |
-| `pnpm dev` | Local watch mode |
-| `pnpm build` / `pnpm start` | Compile / run compiled backend |
-| `pnpm typecheck` | TypeScript checking without file emission |
-| `pnpm lint` | Biome checks |
-| `pnpm prisma:generate` | Regenerate Prisma Client |
-| `pnpm prisma:deploy` | Apply committed migrations |
-| `pnpm prisma:migrate` | Create/apply migrations during schema development |
-| `pnpm prisma:seed` | Populate sample data |
-| `pnpm prisma:studio` | Browse the configured database |
-| `pnpm test:smoke` | API checks using seeded accounts and test records |
-| `pnpm test:workflow` | Advance a Stripe-paid demo shipment through delivery |
+| Command                     | Purpose                                              |
+| --------------------------- | ---------------------------------------------------- |
+| `pnpm dev`                  | Local watch mode                                     |
+| `pnpm build` / `pnpm start` | Compile / run compiled backend                       |
+| `pnpm typecheck`            | TypeScript checking without file emission            |
+| `pnpm lint`                 | Biome checks                                         |
+| `pnpm prisma:generate`      | Regenerate Prisma Client                             |
+| `pnpm prisma:deploy`        | Apply committed migrations                           |
+| `pnpm prisma:migrate`       | Create/apply migrations during schema development    |
+| `pnpm prisma:seed`          | Populate sample data                                 |
+| `pnpm prisma:studio`        | Browse the configured database                       |
+| `pnpm test:smoke`           | API checks using seeded accounts and test records    |
+| `pnpm test:workflow`        | Advance a Stripe-paid demo shipment through delivery |
 
 API scripts need a running backend and seeded database and **change demo data**. They default to `http://localhost:5000/api/v1`; override with `API_BASE_URL` if needed. The workflow script uses the demo Customer, Chattogram staff, and Lima staff. Supply a fresh paid Chattogram-to-Lima shipment awaiting assignment. PowerShell:
 
@@ -341,25 +337,3 @@ API scripts need a running backend and seeded database and **change demo data**.
 $env:PAID_SHIPMENT_ID = "your-paid-demo-shipment-id"
 pnpm test:workflow
 ```
-
-## Engineering Notes and Scope
-
-Critical workflows use Prisma transactions. The shared serializable helper retries `P2034` conflicts up to three attempts. Indexes support common lookups. Redis caches public tracking for 60 seconds and falls back to PostgreSQL when unavailable. The rate limiter uses its default in-memory store rather than Redis.
-
-Refresh-token hashes are stored in the database. Refresh issues a new pair; logout revokes the submitted refresh token. Refresh does not automatically revoke the old token, and logout does not immediately invalidate issued access tokens. Keep the default 30-day refresh expiry to match database expiry calculation.
-
-Notifications are database records, not email/SMS. Delivery completion records demo courier earnings of 10% of shipment price; no payout integration is implemented. File uploads, GPS tracking, automated customs/flight integrations, multi-organization tenancy, and refund APIs are outside this implementation. Schema enum values alone do not imply those workflows exist.
-
-## Final Submission Format
-
-```text
-Project Name    : ShipperEx - Courier & Logistics Platform
-Backend Repo    : https://github.com/au-fahim/ShipperEx-backend
-Live API        : https://shipperex-backend.vercel.app
-API Docs        : https://github.com/au-fahim/ShipperEx-backend/blob/main/docs/ShipperEx.postman_collection.json
-Demo Video      : ADD_YOUR_PUBLIC_DEMO_VIDEO_URL
-Admin Email     : admin@shipperex.com
-Admin Password  : Admin@12345
-```
-
-Before submitting, add the video link, verify live demo admin login/payment, and retain at least 20 meaningful backend commits. The 5-10 minute walkthrough should demonstrate architecture, all three roles, forbidden access, CRUD, validation/errors, payment, and one technical challenge.
