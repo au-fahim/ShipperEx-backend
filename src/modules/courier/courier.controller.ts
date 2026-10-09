@@ -29,6 +29,22 @@ export const courierController = {
     });
   }),
 
+  updateManagerHub: catchAsync(async (req, res) => {
+    const authUser = getAuthUser(req);
+    const result = await courierService.updateManagerHub(
+      req.params.id as string,
+      req.body.hubId,
+      authUser.userId,
+    );
+
+    sendResponse({
+      res,
+      statusCode: httpStatus.OK,
+      message: "Manager hub updated successfully",
+      data: result,
+    });
+  }),
+
   getCouriers: catchAsync(async (req, res) => {
     const authUser = getAuthUser(req);
     const result = await courierService.getCouriers(req.query, authUser);

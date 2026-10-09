@@ -8,6 +8,7 @@ import { courierTaskRoutes } from "./modules/courierTask/courierTask.routes.js";
 import { hubRoutes } from "./modules/hub/hub.routes.js";
 import { notificationRoutes } from "./modules/notification/notification.routes.js";
 import { paymentRoutes } from "./modules/payment/payment.routes.js";
+import { rateZoneRoutes } from "./modules/rateZone/rateZone.routes.js";
 import { shipmentRoutes } from "./modules/shipment/shipment.routes.js";
 import { shipmentRateRoutes } from "./modules/shipmentRate/shipmentRate.routes.js";
 import { trackingRoutes } from "./modules/tracking/tracking.routes.js";
@@ -29,6 +30,7 @@ router.get("/health", (_req, res) => {
 router.use("/auth", authRoutes);
 router.use("/", userRoutes);
 router.use("/countries", countryRoutes);
+router.use("/rate-zones", rateZoneRoutes);
 router.use("/shipment-rates", shipmentRateRoutes);
 router.use("/hubs", hubRoutes);
 router.use("/", courierRoutes);

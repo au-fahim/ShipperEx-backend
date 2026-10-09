@@ -1,6 +1,6 @@
 import httpStatus from "http-status";
 import { prisma } from "../../config/prisma.js";
-import type { Role, UserStatus } from "../../generated/prisma/enums.js";
+import { Role, StaffType, UserStatus } from "../../generated/prisma/enums.js";
 import { ApiError } from "../../shared/ApiError.js";
 import { toJson } from "../../shared/json.js";
 import { getPagination } from "../../shared/pagination.js";
@@ -54,8 +54,31 @@ export const userService = {
 
   getUsers: async (query: unknown) => {
     const pagination = getPagination(query);
+    const queryRecord = query as Record<string, string | undefined>;
+    const filter = queryRecord.filter;
+    const staffType =
+      filter === "MANAGER"
+        ? StaffType.MANAGER
+        : filter === "COURIER"
+          ? StaffType.COURIER
+          : undefined;
+    const role =
+      filter === "CUSTOMER"
+        ? Role.CUSTOMER
+        : staffType
+          ? Role.STAFF
+          : undefined;
+    const status =
+      filter === "ACTIVE"
+        ? UserStatus.ACTIVE
+        : filter === "BLOCKED"
+          ? UserStatus.BLOCKED
+          : undefined;
     const where = {
       deletedAt: null,
+      role,
+      status,
+      staffProfile: staffType ? { is: { staffType } } : undefined,
       OR: pagination.search
         ? [
             { name: { contains: pagination.search, mode: "insensitive" as const } },
@@ -132,46 +155,10 @@ export const userService = {
     });
   },
 
-  updateUserRole: async (id: string, role: Role, actorId: string) => {
-    return prisma.$transaction(async (tx) => {
-      const before = await tx.user.findFirst({
-        where: { id, deletedAt: null },
-        select: publicUserSelect,
-      });
-
-      if (!before) {
-        throw new ApiError(httpStatus.NOT_FOUND, "User not found");
-      }
-
-      if (role === "STAFF" && !before.staffProfile) {
-        throw new ApiError(
-          httpStatus.BAD_REQUEST,
-          "Create Manager and Courier accounts through the staff provisioning endpoints",
-        );
-      }
-
-      if (before.role === "STAFF" && role !== "STAFF") {
-        throw new ApiError(httpStatus.BAD_REQUEST, "Staff roles cannot be changed directly");
-      }
-
-      const after = await tx.user.update({
-        where: { id },
-        data: { role },
-        select: publicUserSelect,
-      });
-
-      await tx.auditLog.create({
-        data: {
-          actorId,
-          action: "USER_ROLE_UPDATED",
-          entityType: "User",
-          entityId: id,
-          before: toJson(before),
-          after: toJson(after),
-        },
-      });
-
-      return after;
-    });
+  updateUserRole: async (_id: string, _role: Role, _actorId: string) => {
+    throw new ApiError(
+      httpStatus.FORBIDDEN,
+      "User roles cannot be changed after account creation",
+    );
   },
 };

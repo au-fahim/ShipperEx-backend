@@ -40,6 +40,11 @@ export const updateCourierValidation = z.object({
   params: z.object({ id: z.string().min(1) }),
 });
 
+export const updateManagerHubValidation = z.object({
+  body: z.object({ hubId: z.string().min(1) }),
+  params: z.object({ id: z.string().min(1) }),
+});
+
 export const courierIdParamValidation = z.object({
   params: z.object({ id: z.string().min(1) }),
 });

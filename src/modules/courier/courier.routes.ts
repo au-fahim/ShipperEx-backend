@@ -6,6 +6,7 @@ import {
   courierIdParamValidation,
   createCourierValidation,
   createManagerValidation,
+  updateManagerHubValidation,
   updateCourierValidation,
 } from "./courier.validation.js";
 
@@ -35,6 +36,12 @@ router.patch(
   requireStaffType(staffTypes.MANAGER),
   validateRequest(updateCourierValidation),
   courierController.updateCourier,
+);
+router.patch(
+  "/admin/staff/managers/:id/hub",
+  auth(roles.ADMIN),
+  validateRequest(updateManagerHubValidation),
+  courierController.updateManagerHub,
 );
 router.delete(
   "/couriers/:id",

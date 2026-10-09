@@ -129,6 +129,47 @@ export const courierService = {
     return { meta: { page: pagination.page, limit: pagination.limit, total }, data };
   },
 
+  updateManagerHub: async (id: string, hubId: string, actorId: string) =>
+    prisma.$transaction(async (tx) => {
+      const before = await tx.staffProfile.findFirst({
+        where: { id, deletedAt: null, staffType: StaffType.MANAGER },
+        select: staffSelect,
+      });
+
+      if (!before) {
+        throw new ApiError(httpStatus.NOT_FOUND, "Hub manager not found");
+      }
+
+      const hub = await tx.hub.findFirst({
+        where: { id: hubId, deletedAt: null, isActive: true },
+        select: { id: true },
+      });
+      if (!hub) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Active hub not found");
+      }
+
+      if (before.hub.id === hubId) return before;
+
+      const after = await tx.staffProfile.update({
+        where: { id },
+        data: { hubId },
+        select: staffSelect,
+      });
+
+      await tx.auditLog.create({
+        data: {
+          actorId,
+          action: "MANAGER_HUB_UPDATED",
+          entityType: "StaffProfile",
+          entityId: id,
+          before: toJson(before),
+          after: toJson(after),
+        },
+      });
+
+      return after;
+    }),
+
   updateCourier: async (
     id: string,
     payload: {
